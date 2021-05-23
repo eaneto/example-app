@@ -5,7 +5,9 @@ pipeline {
 
     stages {
         stage('List') {
-            sh 'ls'
+            steps {
+                sh 'ls'
+            }
         }
 
         stage('Clone') {
