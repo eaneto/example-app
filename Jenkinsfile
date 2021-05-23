@@ -4,9 +4,9 @@ pipeline {
     }
 
     stages {
-        stage('List') {
+        stage('Clone') {
             steps {
-                sh 'ls -la'
+                git 'https://github.com/eaneto/example-app.git'
             }
         }
 
