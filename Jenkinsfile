@@ -1,9 +1,12 @@
 pipeline {
-    agent any
+    agent {
+        label master
+    }
+
     stages {
         stage('Clone') {
             steps {
-                git "https://github.com/eaneto/example-app.git"
+                git branch: "main", url "https://github.com/eaneto/example-app.git"
             }
         }
 
