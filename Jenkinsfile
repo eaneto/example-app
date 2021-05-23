@@ -6,7 +6,7 @@ pipeline {
     stages {
         stage('List') {
             steps {
-                sh 'ls'
+                sh 'ls -la'
             }
         }
 
