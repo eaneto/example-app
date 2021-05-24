@@ -22,8 +22,8 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                // Kill active process running the app
-                sh "sshpass -p '${params.password}' ssh -oStrictHostKeyChecking=no vagrant@192.168.33.12 killall app"
+                // Kill active process running the app, always return success
+                sh "sshpass -p '${params.password}' ssh -oStrictHostKeyChecking=no vagrant@192.168.33.12 killall app || true"
                 // Move the binary to /tmp
                 sh "sshpass -p '${params.password}' ssh -oStrictHostKeyChecking=no vagrant@192.168.33.12 'cp /tmp/example-app/bin/app /tmp/app'"
                 // launch binary on machine nohup
