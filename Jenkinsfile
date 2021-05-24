@@ -17,7 +17,6 @@ pipeline {
         stage('Build') {
             steps {
                 sh "sshpass -p '${params.password}' ssh -oStrictHostKeyChecking=no vagrant@192.168.33.12 'cd /tmp/example-app && make build'"
-                sh "sshpass -p '${params.password}' ssh -oStrictHostKeyChecking=no vagrant@192.168.33.12 'cp /tmp/example-app/bin/app /tmp/app'"
             }
         }
 
@@ -25,6 +24,8 @@ pipeline {
             steps {
                 // Kill active process running the app
                 sh "sshpass -p '${params.password}' ssh -oStrictHostKeyChecking=no vagrant@192.168.33.12 killall app"
+                // Move the binary to /tmp
+                sh "sshpass -p '${params.password}' ssh -oStrictHostKeyChecking=no vagrant@192.168.33.12 'cp /tmp/example-app/bin/app /tmp/app'"
                 // launch binary on machine nohup
                 sh "sshpass -p '${params.password}' ssh -oStrictHostKeyChecking=no vagrant@192.168.33.12 'nohup /tmp/app &'&"
                 // Wait two seconds
