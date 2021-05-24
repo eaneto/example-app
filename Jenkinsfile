@@ -17,17 +17,6 @@ pipeline {
             }
         }
 
-        stage('Set up Environment') {
-            steps {
-                // Set up aws account
-                sh "sshpass -p '${params.password}' ssh -oStrictHostKeyChecking=no vagrant@192.168.33.12 \"export AWS_ACCOUNT='${params.AWS_ACCOUNT}'\""
-                // Set up aws access key id
-                sh "sshpass -p '${params.password}' ssh -oStrictHostKeyChecking=no vagrant@192.168.33.12 \"export AWS_ACCESS_KEY_ID='${params.AWS_ACCESS_KEY_ID}'\""
-                // Set up aws secret acess key
-                sh "sshpass -p '${params.password}' ssh -oStrictHostKeyChecking=no vagrant@192.168.33.12 \"export AWS_SECRET_ACCESS_KEY='${params.AWS_SECRET_ACCESS_KEY}'\""
-            }
-        }
-
         stage('Build') {
             steps {
                 sh "sshpass -p '${params.password}' ssh -oStrictHostKeyChecking=no vagrant@192.168.33.12 'cd /tmp/example-app && make build'"
@@ -41,7 +30,7 @@ pipeline {
                 // Move the binary to /tmp
                 sh "sshpass -p '${params.password}' ssh -oStrictHostKeyChecking=no vagrant@192.168.33.12 'cp /tmp/example-app/bin/app /tmp/app'"
                 // launch binary on machine nohup
-                sh "sshpass -p '${params.password}' ssh -oStrictHostKeyChecking=no vagrant@192.168.33.12 'nohup /tmp/app > /tmp/app.out &'&"
+                sh "sshpass -p '${params.password}' ssh -oStrictHostKeyChecking=no vagrant@192.168.33.12 \"export AWS_ACCOUNT='${params.AWS_ACCOUNT}'; export AWS_SECRET_ACCESS_KEY='${params.AWS_SECRET_ACCESS_KEY}'; export AWS_ACCESS_KEY_ID='${params.AWS_ACCESS_KEY_ID}'; nohup /tmp/app > /tmp/app.out &\"&"
                 // Wait two seconds
                 sh "sleep 2"
             }
