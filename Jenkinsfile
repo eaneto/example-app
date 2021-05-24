@@ -20,7 +20,7 @@ pipeline {
         stage('Set up Environment') {
             steps {
                 // Set up aws account
-                sh "sshpass -p '${params.password}' ssh -oStrictHostKeyChecking=no vagrant@192.168.33.12 'export AWS_ACCOUNT=${params.AWS_ACCOUNT}'"
+                sh "sshpass -p '${params.password}' ssh -oStrictHostKeyChecking=no vagrant@192.168.33.12 \"export AWS_ACCOUNT='${params.AWS_ACCOUNT}'\""
                 // Set up aws access key id
                 sh "sshpass -p '${params.password}' ssh -oStrictHostKeyChecking=no vagrant@192.168.33.12 \"export AWS_ACCESS_KEY_ID='${params.AWS_ACCESS_KEY_ID}'\""
                 // Set up aws secret acess key
