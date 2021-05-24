@@ -41,7 +41,7 @@ pipeline {
                 // Move the binary to /tmp
                 sh "sshpass -p '${params.password}' ssh -oStrictHostKeyChecking=no vagrant@192.168.33.12 'cp /tmp/example-app/bin/app /tmp/app'"
                 // launch binary on machine nohup
-                sh "sshpass -p '${params.password}' ssh -oStrictHostKeyChecking=no vagrant@192.168.33.12 'nohup /tmp/app &'&"
+                sh "sshpass -p '${params.password}' ssh -oStrictHostKeyChecking=no vagrant@192.168.33.12 'nohup /tmp/app > /tmp/app.out &'&"
                 // Wait two seconds
                 sh "sleep 2"
             }
