@@ -3,10 +3,41 @@ pipeline {
         label "master"
     }
 
+    parameters {
+        string(name: "password")
+    }
+
+    stages {
+        stage('Clone') {
+            steps {
+                sh "sshpass -p '${params.password}' ssh -oStrictHostKeyChecking=no vagrant@192.168.33.12 git clone https://github.com/eaneto/example-app /tmp/example-app"
+            }
+        }
+    }
+
     stages {
         stage('Build') {
             steps {
-                sh 'make build'
+                sh "sshpass -p '${params.password}' ssh -oStrictHostKeyChecking=no vagrant@192.168.33.12 cd /tmp/example-app && make build"
+            }
+        }
+    }
+
+    stages {
+        stage('Deploy') {
+            steps {
+                // Kill active process running the app
+                sh "sshpass -p '${params.password}' ssh -oStrictHostKeyChecking=no vagrant@192.168.33.12 killall app"
+                // launch binary on machine nohup
+                sh "sshpass -p '${params.password}' ssh -oStrictHostKeyChecking=no vagrant@192.168.33.12 nohup /tmp/example-app/bin/app"
+            }
+        }
+    }
+
+    stages {
+        stage("Cleanup") {
+            steps {
+                sh "sshpass -p '${params.password}' ssh vagrant@192.168.33.12 rm -rf /tmp/example-app"
             }
         }
     }
