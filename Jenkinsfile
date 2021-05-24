@@ -4,7 +4,10 @@ pipeline {
     }
 
     parameters {
-        string(name: "password")
+        string(name: "password", description: "Deploy Password")
+        string(name: "accessKey", description: "AWS Access Key")
+        string(name: "secretKey", description: "AWS Secret Key")
+        string(name: "account"  , description: "AWS Account Number")
     }
 
     stages {
@@ -16,7 +19,7 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh "sshpass -p '${params.password}' ssh -oStrictHostKeyChecking=no vagrant@192.168.33.12 'cd /tmp/example-app && make build'"
+                sh "make build'"
             }
         }
 
@@ -27,7 +30,7 @@ pipeline {
                 // Move the binary to /tmp
                 sh "sshpass -p '${params.password}' ssh -oStrictHostKeyChecking=no vagrant@192.168.33.12 'cp /tmp/example-app/bin/app /tmp/app'"
                 // launch binary on machine nohup
-                sh "sshpass -p '${params.password}' ssh -oStrictHostKeyChecking=no vagrant@192.168.33.12 \"source /etc/environment; nohup /tmp/app > /tmp/app.out &\"&"
+                sh "sshpass -p '${params.password}' ssh -oStrictHostKeyChecking=no vagrant@192.168.33.12 \" nohup /tmp/app -accessKey=${accessKey}> -secretKey=${secretKey} -account=${account} > /tmp/app.out &\"&"
                 // Wait two seconds
                 sh "sleep 2"
             }
