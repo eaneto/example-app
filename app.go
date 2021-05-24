@@ -14,7 +14,7 @@ import (
 const (
 	AWS_REGION = "us-east-1"
 	QUEUE_NAME = "notification-queue"
-	TOPIC_NAME = "SMSmessage"
+	TOPIC_NAME = "notification-topic"
 )
 
 var accessKey, secretKey, account string
