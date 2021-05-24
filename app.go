@@ -51,7 +51,7 @@ func snsHandler(w http.ResponseWriter, r *http.Request) {
 	accessKey := os.Getenv("AWS_ACCESS_KEY_ID")
 	secretKey := os.Getenv("AWS_SECRET_ACCESS_KEY")
 	region := os.Getenv("AWS_DEFAULT_REGION")
-	topic := os.Getenv("AWS_SNS_TOPIC")
+	topic := "notification-topic"
 	account := os.Getenv("AWS_ACCOUNT")
 
 	snsService, err := sns.New(accessKey, secretKey, region)
