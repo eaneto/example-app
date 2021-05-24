@@ -87,6 +87,7 @@ func snsHandler(w http.ResponseWriter, r *http.Request) {
 
 // healthHandler returns ok always, used by nagios.
 func healthHandler(w http.ResponseWriter, r *http.Request) {
+	logrus.Info("Health Check OK")
 	w.WriteHeader(http.StatusOK)
 }
 
