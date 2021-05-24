@@ -2,27 +2,25 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
-	"net/http"
-	"os"
-
 	"github.com/eaneto/notify"
 	sns "github.com/eaneto/notify/service/amazonsns"
 	sqs "github.com/eaneto/notify/service/amazonsqs"
 	"github.com/sirupsen/logrus"
+	"net/http"
 )
 
 const (
 	AWS_REGION = "us-east-1"
 	QUEUE_NAME = "notification-queue"
-	TOPIC_NAME = "notification-topic"
+	TOPIC_NAME = "SMSmessage"
 )
+
+var accessKey, secretKey, account string
 
 func sqsHandler(w http.ResponseWriter, r *http.Request) {
 	notifier := notify.New()
-
-	accessKey := os.Getenv("AWS_ACCESS_KEY_ID")
-	secretKey := os.Getenv("AWS_SECRET_ACCESS_KEY")
 	sqsService, err := sqs.New(accessKey, secretKey, AWS_REGION)
 
 	if err != nil {
@@ -30,7 +28,6 @@ func sqsHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 
-	account := os.Getenv("AWS_ACCOUNT")
 	baseUrl := "https://sqs.%s.amazonaws.com/%s/%s"
 	sqsService.AddReceivers(fmt.Sprintf(
 		baseUrl, AWS_REGION, account, QUEUE_NAME,
@@ -55,11 +52,8 @@ func sqsHandler(w http.ResponseWriter, r *http.Request) {
 
 func snsHandler(w http.ResponseWriter, r *http.Request) {
 	notifier := notify.New()
-	accessKey := os.Getenv("AWS_ACCESS_KEY_ID")
-	secretKey := os.Getenv("AWS_SECRET_ACCESS_KEY")
-	account := os.Getenv("AWS_ACCOUNT")
-
 	snsService, err := sns.New(accessKey, secretKey, AWS_REGION)
+	fmt.Println(accessKey, secretKey)
 	if err != nil {
 		logrus.Error(err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -92,6 +86,11 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	flag.StringVar(&accessKey, "accessKey", "", "")
+	flag.StringVar(&secretKey, "secretKey", "", "")
+	flag.StringVar(&account, "account", "", "")
+	flag.Parse()
+	fmt.Println(accessKey, secretKey)
 	http.HandleFunc("/publish-sqs", sqsHandler)
 	http.HandleFunc("/publish-sns", snsHandler)
 	http.HandleFunc("/health", healthHandler)
