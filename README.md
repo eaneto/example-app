@@ -2,12 +2,10 @@
 
 Example Application used for my software engineering class.
 
-## Set Up
+## Rub
 
 ```bash
-export AWS_ACCOUNT=account
-export AWS_ACCESS_KEY_ID=secret-key-id
-export AWS_SECRET_ACCESS_KEY=secret-access-key
+./bin/app -accessKey=<accessKey> -secretKey=<secretKey> -account=<account>
 ```
 
 ## Terraform
