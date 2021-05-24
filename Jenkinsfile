@@ -5,6 +5,9 @@ pipeline {
 
     parameters {
         string(name: "password")
+        string(name: "AWS_ACCOUNT")
+        string(name: "AWS_ACCESS_KEY_ID")
+        string(name: "AWS_SECRET_ACCESS_KEY")
     }
 
     stages {
@@ -12,6 +15,15 @@ pipeline {
             steps {
                 sh "sshpass -p '${params.password}' ssh -oStrictHostKeyChecking=no vagrant@192.168.33.12 git clone https://github.com/eaneto/example-app /tmp/example-app"
             }
+        }
+
+        stage('Set up Environment') {
+            // Set up aws account
+            sh "sshpass -p '${params.password}' ssh -oStrictHostKeyChecking=no vagrant@192.168.33.12 'export AWS_ACCOUNT=${params.AWS_ACCOUNT}'"
+            // Set up aws access key id
+            sh "sshpass -p '${params.password}' ssh -oStrictHostKeyChecking=no vagrant@192.168.33.12 'export AWS_ACCESS_KEY_ID=${params.AWS_ACCESS_KEY_ID}'"
+            // Set up aws secret acess key
+            sh "sshpass -p '${params.password}' ssh -oStrictHostKeyChecking=no vagrant@192.168.33.12 'export AWS_SECRET_ACCESS_KEY=${params.AWS_SECRET_ACCESS_KEY}'"
         }
 
         stage('Build') {

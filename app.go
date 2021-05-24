@@ -12,13 +12,18 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+const (
+	AWS_REGION = "us-east-1"
+	QUEUE_NAME = "notification-queue"
+	TOPIC_NAME = "notification-topic"
+)
+
 func sqsHandler(w http.ResponseWriter, r *http.Request) {
 	notifier := notify.New()
 
 	accessKey := os.Getenv("AWS_ACCESS_KEY_ID")
 	secretKey := os.Getenv("AWS_SECRET_ACCESS_KEY")
-	region := os.Getenv("AWS_DEFAULT_REGION")
-	sqsService, err := sqs.New(accessKey, secretKey, region)
+	sqsService, err := sqs.New(accessKey, secretKey, AWS_REGION)
 
 	if err != nil {
 		logrus.Error(err)
@@ -26,8 +31,10 @@ func sqsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	account := os.Getenv("AWS_ACCOUNT")
-	baseUrl := "https://sqs.%s.amazonaws.com/%s/notification-queue"
-	sqsService.AddReceivers(fmt.Sprintf(baseUrl, region, account))
+	baseUrl := "https://sqs.%s.amazonaws.com/%s/%s"
+	sqsService.AddReceivers(fmt.Sprintf(
+		baseUrl, AWS_REGION, account, QUEUE_NAME,
+	))
 
 	notifier.UseServices(sqsService)
 
@@ -50,18 +57,18 @@ func snsHandler(w http.ResponseWriter, r *http.Request) {
 	notifier := notify.New()
 	accessKey := os.Getenv("AWS_ACCESS_KEY_ID")
 	secretKey := os.Getenv("AWS_SECRET_ACCESS_KEY")
-	region := os.Getenv("AWS_DEFAULT_REGION")
-	topic := "notification-topic"
 	account := os.Getenv("AWS_ACCOUNT")
 
-	snsService, err := sns.New(accessKey, secretKey, region)
+	snsService, err := sns.New(accessKey, secretKey, AWS_REGION)
 	if err != nil {
 		logrus.Error(err)
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 
 	baseTopic := "arn:aws:sns:%s:%s:%s"
-	snsService.AddReceivers(fmt.Sprintf(baseTopic, region, account, topic))
+	snsService.AddReceivers(fmt.Sprintf(
+		baseTopic, AWS_REGION, account, TOPIC_NAME,
+	))
 	notifier.UseServices(snsService)
 
 	err = notifier.Send(
