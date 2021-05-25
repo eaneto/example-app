@@ -19,7 +19,7 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh "make build"
+                sh "sshpass -p '${params.password}' ssh -oStrictHostKeyChecking=no vagrant@192.168.33.12 'cd /tmp/example-app && make build'"
             }
         }
 
