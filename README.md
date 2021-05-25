@@ -2,7 +2,7 @@
 
 Example Application used for my software engineering class.
 
-## Rub
+## Run
 
 ```bash
 ./bin/app -accessKey=<accessKey> -secretKey=<secretKey> -account=<account>
