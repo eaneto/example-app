@@ -13,7 +13,6 @@ pipeline {
     stages {
         stage("Cleanup") {
              steps {
-                  sh "ssh-keygen -f '/home/jenkins/data/.ssh/known_hosts' -R '192.168.33.12'"
                   sh "sshpass -p '${params.password}' ssh -oStrictHostKeyChecking=no vagrant@192.168.33.12 rm -rf /tmp/example-app"
             }
         }
